@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="WriteOff Pro — современная платформа автоматизации процесса списания продукции на торговых точках. Простой процесс создания заявок, проверки и интеграции с iiko." />
+  <title>WriteOff Pro — Автоматизация списания продукции</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ===== PRELOADER ===== -->
+  <div id="preloader" class="preloader">
+    <div class="preloader-inner">
+      <div class="preloader-logo-wrapper">
+        <div class="preloader-glow"></div>
+        <svg class="preloader-svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <rect width="64" height="64" rx="20" fill="url(#bgGrad)"/>
+          <rect x="1" y="1" width="62" height="62" rx="19" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+          <path d="M20 32L28 40L44 24" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <defs>
+            <linearGradient id="bgGrad" x1="0" y1="0" x2="64" y2="64">
+              <stop offset="0%" stop-color="#8b5cf6"/>
+              <stop offset="100%" stop-color="#ec4899"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="preloader-bar"><div class="preloader-fill"></div></div>
+      <p class="preloader-text">WriteOff Pro</p>
+    </div>
+  </div>
+
+  <!-- ===== TOAST CONTAINER ===== -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ===== AUTH PAGE ===== -->
+  <div id="page-auth" class="page active">
+    <div class="auth-bg">
+      <div class="auth-radial auth-radial-1"></div>
+      <div class="auth-radial auth-radial-2"></div>
+      <div class="auth-grid-pattern"></div>
+    </div>
+    <div class="auth-container">
+      <div class="auth-card glass-card animate-fadeInUp">
+        <div class="auth-header">
+          <div class="auth-logo-badge">
+            <svg width="24" height="24" viewBox="0 0 48 48" fill="none">
+              <path d="M14 24L20 30L34 16" stroke="#a78bfa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h1 class="auth-title">WriteOff Pro</h1>
+          <p class="auth-subtitle">Система автоматизации списаний продукции</p>
+        </div>
+        <form id="auth-form" class="auth-form" novalidate onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label class="form-label" for="auth-login">Идентификатор</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <input type="text" id="auth-login" class="form-input" placeholder="Введите логин" autocomplete="username" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="auth-password">Пароль доступа</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input type="password" id="auth-password" class="form-input" placeholder="Введите пароль" autocomplete="current-password" />
+              <button type="button" class="input-toggle-password" id="toggle-password" onclick="togglePasswordVisibility()" aria-label="Показать пароль">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <div id="auth-error" class="auth-error hidden">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="auth-error-text">Неверный логин или пароль</span>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full" id="auth-btn">
+            <span class="btn-text">Продолжить работу</span>
+            <div class="btn-spinner hidden" id="auth-spinner"></div>
+          </button>
+        </form>
+        <div class="auth-demo-accounts">
+          <p class="demo-label">Мгновенный демонстрационный доступ:</p>
+          <div class="demo-cards">
+            <button class="demo-card" onclick="fillDemo('employee')" id="demo-employee-btn">
+              <div class="demo-role-icon employee">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div>
+                <div class="demo-role">Сотрудник</div>
+                <div class="demo-creds">staff / 1234</div>
+              </div>
+            </button>
+            <button class="demo-card" onclick="fillDemo('checker')" id="demo-checker-btn">
+              <div class="demo-role-icon checker">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              </div>
+              <div>
+                <div class="demo-role">Проверяющий</div>
+                <div class="demo-creds">manager / 5678</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EMPLOYEE WORKSPACE ===== -->
+  <div id="page-employee" class="page">
+    <div class="sidebar-overlay" id="emp-sidebar-overlay" onclick="toggleSidebar('employee')"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-dot"></div>
+          <span>WriteOff Pro</span>
+        </div>
+        <button class="sidebar-close" onclick="toggleSidebar('employee')" aria-label="Закрыть меню">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="emp-avatar">СА</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="emp-name">Смирнов Андрей</div>
+          <div class="sidebar-user-role">Сотрудник точки</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link active" data-emp-page="dashboard" onclick="navigateEmpPage('dashboard')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Сводка</span>
+        </a>
+        <a href="#" class="sidebar-link" data-emp-page="new-request" onclick="navigateEmpPage('new-request')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-width="2.5"/></svg>
+          <span>Новое списание</span>
+        </a>
+        <a href="#" class="sidebar-link" data-emp-page="my-requests" onclick="navigateEmpPage('my-requests')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Мои заявки</span>
+          <span class="sidebar-badge" id="emp-badge">0</span>
+        </a>
+        <a href="#" class="sidebar-link" data-emp-page="profile" onclick="navigateEmpPage('profile')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Профиль</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="sidebar-logout" onclick="logout()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Завершить сессию</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <header class="topbar">
+        <button class="topbar-menu" onclick="toggleSidebar('employee')" aria-label="Открыть меню">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="topbar-title" id="emp-page-title">Сводка</div>
+        <div class="topbar-actions">
+          <!-- Role switcher pills directly in topbar for easy hackathon demo -->
+          <div class="role-switcher-pills">
+            <button class="role-pill active">Сотрудник</button>
+            <button class="role-pill" onclick="switchRoleDirect('manager')">Проверяющий</button>
+          </div>
+          <div class="topbar-avatar" id="topbar-emp-avatar">СА</div>
+        </div>
+      </header>
+
+      <div class="content-area">
+        <!-- Dashboard Section -->
+        <section class="subpage active" id="emp-page-dashboard">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Приветствуем, <span id="emp-greeting-name">Сотрудник</span></h2>
+              <p class="page-subtitle">Обзор вашей активности на торговой точке</p>
+            </div>
+            <button class="btn btn-primary" onclick="navigateEmpPage('new-request')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+              Новое списание
+            </button>
+          </div>
+          
+          <div class="stats-grid">
+            <div class="stat-card glass-card">
+              <div class="stat-icon stat-icon-blue">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="emp-stat-total">0</div>
+                <div class="stat-label">Всего заявок</div>
+              </div>
+              <div class="stat-sparkline">
+                <svg width="60" height="30" viewBox="0 0 60 30">
+                  <path d="M0,25 Q15,5 30,20 T60,5" fill="none" stroke="rgba(59, 130, 246, 0.4)" stroke-width="2"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon stat-icon-yellow">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="emp-stat-pending">0</div>
+                <div class="stat-label">На проверке</div>
+              </div>
+              <div class="stat-sparkline">
+                <svg width="60" height="30" viewBox="0 0 60 30">
+                  <path d="M0,15 T20,25 T40,10 T60,20" fill="none" stroke="rgba(245, 158, 11, 0.4)" stroke-width="2"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon stat-icon-green">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="emp-stat-approved">0</div>
+                <div class="stat-label">Одобрено</div>
+              </div>
+              <div class="stat-sparkline">
+                <svg width="60" height="30" viewBox="0 0 60 30">
+                  <path d="M0,25 L10,20 L20,28 L30,10 L45,15 L60,2" fill="none" stroke="rgba(34, 197, 94, 0.4)" stroke-width="2"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon stat-icon-red">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="emp-stat-rejected">0</div>
+                <div class="stat-label">Отклонено</div>
+              </div>
+              <div class="stat-sparkline">
+                <svg width="60" height="30" viewBox="0 0 60 30">
+                  <path d="M0,5 L20,10 L40,8 L60,28" fill="none" stroke="rgba(239, 68, 68, 0.4)" stroke-width="2"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="recent-section">
+            <div class="section-header">
+              <h3 class="section-title">Последние списания</h3>
+              <button class="btn btn-ghost btn-sm" onclick="navigateEmpPage('my-requests')">Смотреть все</button>
+            </div>
+            <div class="requests-list" id="emp-recent-list">
+              <!-- JS filled -->
+            </div>
+          </div>
+        </section>
+
+        <!-- New Request Step Wizard Section -->
+        <section class="subpage" id="emp-page-new-request">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Новая заявка на списание</h2>
+              <p class="page-subtitle">Внесите данные о списываемом товаре для отправки менеджеру</p>
+            </div>
+          </div>
+          <div class="form-card glass-card">
+            <form id="request-form" novalidate onsubmit="handleRequestSubmit(event)">
+              <div class="step-indicator">
+                <div class="step active" id="step-1-ind"><span class="step-num">1</span><span class="step-label">Фотосъемка</span></div>
+                <div class="step-line" id="step-line-1"></div>
+                <div class="step" id="step-2-ind"><span class="step-num">2</span><span class="step-label">Спецификация</span></div>
+                <div class="step-line" id="step-line-2"></div>
+                <div class="step" id="step-3-ind"><span class="step-num">3</span><span class="step-label">Верификация</span></div>
+              </div>
+
+              <!-- Step 1: Photo and Filter selection -->
+              <div class="form-step active" id="form-step-1">
+                <h3 class="step-title">Загрузите снимок поврежденного товара</h3>
+                <div class="photo-uploader-box">
+                  <div class="photo-upload-zone" onclick="triggerPhotoInput()">
+                    <input type="file" id="photo-input" accept="image/*" class="photo-input-hidden" onchange="handlePhotoChange(event)" />
+                    <div class="photo-placeholder" id="photo-placeholder">
+                      <div class="photo-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                      </div>
+                      <p class="photo-hint">Сделать фото или прикрепить файл</p>
+                      <p class="photo-hint-sub">Форматы JPG, PNG, WEBP. Размер до 10 МБ.</p>
+                    </div>
+                    <div class="photo-preview hidden" id="photo-preview">
+                      <img id="photo-preview-img" src="" alt="Фото продукции" />
+                      <button type="button" class="photo-remove" onclick="removePhoto(event)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Photo filter adjust tools -->
+                  <div class="photo-filters-panel hidden" id="photo-filters-panel">
+                    <p class="filter-panel-title">Визуальное качество</p>
+                    <div class="filter-buttons">
+                      <button type="button" class="btn btn-ghost btn-sm active" onclick="applyPhotoFilter('none', this)">Оригинал</button>
+                      <button type="button" class="btn btn-ghost btn-sm" onclick="applyPhotoFilter('contrast', this)">Контраст</button>
+                      <button type="button" class="btn btn-ghost btn-sm" onclick="applyPhotoFilter('grayscale', this)">Чёрно-белый</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="step-actions">
+                  <button type="button" class="btn btn-primary" onclick="goToStep(2)">Продолжить</button>
+                </div>
+              </div>
+
+              <!-- Step 2: Form Details -->
+              <div class="form-step" id="form-step-2">
+                <h3 class="step-title">Укажите параметры списания</h3>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label class="form-label" for="req-store">Торговая точка <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                      <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                      <select id="req-store" class="form-input form-select">
+                        <option value="">Выберите точку</option>
+                        <option value="s1">ТЦ «Мегамолл» — ул. Ленина, 1</option>
+                        <option value="s2">ТЦ «Центральный» — пр. Мира, 15</option>
+                        <option value="s3">ТЦ «Северный» — ул. Советская, 42</option>
+                        <option value="s4">ТЦ «Южный» — ул. Гагарина, 8</option>
+                        <option value="s5">ТЦ «Восток» — пр. Победы, 3</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="req-product">Наименование товара <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                      <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                      <input type="text" id="req-product" class="form-input" placeholder="Например: Сэндвич с курицей" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="req-qty">Количество / Ед. изм. <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                      <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                      <input type="text" id="req-qty" class="form-input" placeholder="Например: 5 шт, 1.2 кг" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Характер списания <span class="required">*</span></label>
+                    <div class="radio-group">
+                      <label class="radio-card">
+                        <input type="radio" name="deduction-type" value="no" checked onchange="toggleDeductionEmployee(false)" />
+                        <div class="radio-card-inner">
+                          <div class="radio-icon green">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                          </div>
+                          <div>
+                            <div class="radio-title">Без удержания</div>
+                            <div class="radio-desc">Списание на компанию</div>
+                          </div>
+                        </div>
+                      </label>
+                      <label class="radio-card">
+                        <input type="radio" name="deduction-type" value="yes" onchange="toggleDeductionEmployee(true)" />
+                        <div class="radio-card-inner">
+                          <div class="radio-icon red">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
+                          </div>
+                          <div>
+                            <div class="radio-title">С удержанием</div>
+                            <div class="radio-desc">Вычет из заработной платы</div>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="form-group" id="employee-select-group" style="display:none;">
+                    <label class="form-label" for="req-employee">Ответственный сотрудник <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                      <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                      <select id="req-employee" class="form-input form-select">
+                        <option value="">Выберите сотрудника</option>
+                        <option value="e1">Иванова Мария Сергеевна</option>
+                        <option value="e2">Петров Алексей Иванович</option>
+                        <option value="e3">Сидорова Елена Петровна</option>
+                        <option value="e4">Козлов Дмитрий Андреевич</option>
+                        <option value="e5">Новикова Ольга Викторовна</option>
+                        <option value="e6">Смирнов Андрей Николаевич</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group full-width">
+                    <label class="form-label" for="req-comment">Причина списания (минимум 10 символов) <span class="required">*</span></label>
+                    <div class="textarea-wrapper">
+                      <textarea id="req-comment" class="form-input form-textarea" placeholder="Опишите подробно причину отбраковки/списания продукции..." oninput="updateCommentCount()"></textarea>
+                      <div class="textarea-counter"><span id="comment-count">0</span>/500</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="step-actions">
+                  <button type="button" class="btn btn-ghost" onclick="goToStep(1)">Назад</button>
+                  <button type="button" class="btn btn-primary" onclick="goToStep(3)">Продолжить</button>
+                </div>
+              </div>
+
+              <!-- Step 3: Review Details -->
+              <div class="form-step" id="form-step-3">
+                <h3 class="step-title">Подтверждение корректности данных</h3>
+                <div class="review-card glass-card" id="review-content">
+                  <!-- JS filled -->
+                </div>
+                <div class="step-actions">
+                  <button type="button" class="btn btn-ghost" onclick="goToStep(2)">Назад</button>
+                  <button type="submit" class="btn btn-primary">
+                    <span class="btn-text">Отправить на проверку</span>
+                    <div class="btn-spinner hidden" id="submit-spinner"></div>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- My Requests Section -->
+        <section class="subpage" id="emp-page-my-requests">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Мои заявки</h2>
+              <p class="page-subtitle">История ваших заявок по текущей точке</p>
+            </div>
+          </div>
+          <div class="filter-bar glass-card">
+            <div class="search-wrapper">
+              <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" class="search-input" id="emp-search" placeholder="Поиск по наименованию или описанию..." oninput="filterEmpRequests()" />
+            </div>
+            <div class="filter-chips">
+              <button class="chip active" onclick="setEmpFilter(this, 'all')">Все</button>
+              <button class="chip" onclick="setEmpFilter(this, 'pending')">На проверке</button>
+              <button class="chip" onclick="setEmpFilter(this, 'approved')">Одобрено</button>
+              <button class="chip" onclick="setEmpFilter(this, 'rejected')">Отклонено</button>
+            </div>
+          </div>
+          <div class="requests-list" id="emp-all-requests-list">
+            <!-- JS filled -->
+          </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section class="subpage" id="emp-page-profile">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Мой кабинет</h2>
+              <p class="page-subtitle">Личные параметры сотрудника</p>
+            </div>
+          </div>
+          <div class="profile-grid">
+            <div class="profile-card glass-card">
+              <div class="profile-avatar-large" id="emp-profile-avatar">СА</div>
+              <div class="profile-name" id="emp-profile-name">Смирнов Андрей</div>
+              <div class="profile-role-badge employee">Сотрудник</div>
+              <div class="profile-stats">
+                <div class="profile-stat">
+                  <div class="profile-stat-val" id="emp-profile-total">0</div>
+                  <div class="profile-stat-label">Заявок</div>
+                </div>
+                <div class="profile-stat">
+                  <div class="profile-stat-val" id="emp-profile-approved">0</div>
+                  <div class="profile-stat-label">Одобрено</div>
+                </div>
+                <div class="profile-stat">
+                  <div class="profile-stat-val" id="emp-profile-rate">0%</div>
+                  <div class="profile-stat-label">Одобрено</div>
+                </div>
+              </div>
+            </div>
+            <div class="profile-info-card glass-card">
+              <h3 class="profile-section-title">Системные сведения</h3>
+              <div class="profile-info-list">
+                <div class="profile-info-item">
+                  <div class="profile-info-label">ФИО сотрудника</div>
+                  <div class="profile-info-value" id="emp-profile-info-name">Смирнов Андрей</div>
+                </div>
+                <div class="profile-info-item">
+                  <div class="profile-info-label">Права учетной записи</div>
+                  <div class="profile-info-value">Сотрудник торговой точки</div>
+                </div>
+                <div class="profile-info-item">
+                  <div class="profile-info-label">Закрепленный магазин</div>
+                  <div class="profile-info-value" id="emp-profile-info-store">ТЦ «Мегамолл»</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Live activity log inside workspace footer -->
+      <footer class="workspace-footer">
+        <div class="live-activity-feed">
+          <div class="pulse-dot"></div>
+          <span class="feed-label">Live feed:</span>
+          <span class="feed-text" id="live-feed-text">Инициализация мониторинга WriteOff Pro...</span>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ===== MANAGER WORKSPACE ===== -->
+  <div id="page-manager" class="page">
+    <div class="sidebar-overlay" id="mgr-sidebar-overlay" onclick="toggleSidebar('manager')"></div>
+    <aside class="sidebar" id="mgr-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-dot manager"></div>
+          <span>WriteOff Pro</span>
+        </div>
+        <button class="sidebar-close" onclick="toggleSidebar('manager')" aria-label="Закрыть меню">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="sidebar-user">
+        <div class="sidebar-avatar checker-avatar" id="mgr-avatar">НМ</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="mgr-name">Новиков Михаил</div>
+          <div class="sidebar-user-role">Контролирующий</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="sidebar-link active" data-mgr-page="dashboard" onclick="navigateMgrPage('dashboard')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Дашборд</span>
+        </a>
+        <a href="#" class="sidebar-link" data-mgr-page="pending" onclick="navigateMgrPage('pending')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>На проверке</span>
+          <span class="sidebar-badge pending-badge" id="mgr-pending-badge">0</span>
+        </a>
+        <a href="#" class="sidebar-link" data-mgr-page="history" onclick="navigateMgrPage('history')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>История</span>
+        </a>
+        <a href="#" class="sidebar-link" data-mgr-page="profile" onclick="navigateMgrPage('profile')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>iiko & Настройки</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="sidebar-logout" onclick="logout()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Завершить сессию</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <header class="topbar">
+        <button class="topbar-menu" onclick="toggleSidebar('manager')" aria-label="Открыть меню">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="topbar-title" id="mgr-page-title">Панель управления</div>
+        <div class="topbar-actions">
+          <div class="role-switcher-pills">
+            <button class="role-pill" onclick="switchRoleDirect('employee')">Сотрудник</button>
+            <button class="role-pill active">Проверяющий</button>
+          </div>
+          <div class="notification-btn" onclick="toggleNotificationsPanel(event)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notif-dot" id="mgr-notif-dot"></span>
+          </div>
+          <div class="topbar-avatar checker-avatar" id="topbar-mgr-avatar">НМ</div>
+        </div>
+      </header>
+
+      <!-- Notifications Panel -->
+      <div class="notifications-panel hidden" id="notifications-panel" onclick="event.stopPropagation()">
+        <div class="notif-header">
+          <h4>События системы</h4>
+          <button onclick="clearNotifications()">Очистить</button>
+        </div>
+        <div class="notif-list" id="notif-list">
+          <!-- JS filled -->
+        </div>
+      </div>
+
+      <div class="content-area">
+        <!-- Dashboard Section -->
+        <section class="subpage active" id="mgr-page-dashboard">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Панель контроля</h2>
+              <p class="page-subtitle">Глобальный дашборд верификации списаний торговых точек</p>
+            </div>
+          </div>
+          
+          <div class="stats-grid">
+            <div class="stat-card glass-card">
+              <div class="stat-icon stat-icon-purple">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="mgr-stat-total">0</div>
+                <div class="stat-label">Всего заявок</div>
+              </div>
+              <div class="stat-sparkline">
+                <svg width="60" height="30" viewBox="0 0 60 30">
+                  <path d="M0,25 Q10,2 25,22 T60,8" fill="none" stroke="rgba(139, 92, 246, 0.4)" stroke-width="2"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon stat-icon-yellow">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="mgr-stat-pending">0</div>
+                <div class="stat-label">На модерации</div>
+              </div>
+              <div class="stat-sparkline animate-pulse">
+                <svg width="60" height="30" viewBox="0 0 60 30">
+                  <path d="M0,20 L15,10 L30,22 L45,5 L60,18" fill="none" stroke="rgba(245, 158, 11, 0.5)" stroke-width="2"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon stat-icon-green">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="mgr-stat-approved">0</div>
+                <div class="stat-label">Одобрено</div>
+              </div>
+              <div class="stat-sparkline">
+                <svg width="60" height="30" viewBox="0 0 60 30">
+                  <path d="M0,28 L20,18 L40,25 L60,5" fill="none" stroke="rgba(34, 197, 94, 0.4)" stroke-width="2"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon stat-icon-red">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="mgr-stat-rejected">0</div>
+                <div class="stat-label">Отклонено</div>
+              </div>
+              <div class="stat-sparkline">
+                <svg width="60" height="30" viewBox="0 0 60 30">
+                  <path d="M0,8 L20,15 L40,5 L60,25" fill="none" stroke="rgba(239, 68, 68, 0.4)" stroke-width="2"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom high-fidelity dynamic chart -->
+          <div class="chart-section glass-card">
+            <div class="section-header">
+              <h3 class="section-title">Распределение списаний (7 дней)</h3>
+              <div class="chart-legend">
+                <span class="legend-item approved">Одобрено</span>
+                <span class="legend-item rejected">Отклонено</span>
+              </div>
+            </div>
+            <div class="chart-container" id="mgr-chart-container">
+              <!-- JS rendered bars -->
+            </div>
+          </div>
+
+          <div class="recent-section">
+            <div class="section-header">
+              <h3 class="section-title">Ожидают проверки</h3>
+              <button class="btn btn-ghost btn-sm" onclick="navigateMgrPage('pending')">Все на модерации</button>
+            </div>
+            <div class="requests-list" id="mgr-recent-list">
+              <!-- JS filled -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Pending list section -->
+        <section class="subpage" id="mgr-page-pending">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Заявки на модерации</h2>
+              <p class="page-subtitle">Подтвердите или отклоните новые запросы на списание товаров</p>
+            </div>
+          </div>
+          <div class="requests-list" id="mgr-pending-list">
+            <!-- JS filled -->
+          </div>
+        </section>
+
+        <!-- History list section -->
+        <section class="subpage" id="mgr-page-history">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">История верификаций</h2>
+              <p class="page-subtitle">Архив всех списаний торговой сети с функцией фильтрации</p>
+            </div>
+            <button class="btn btn-ghost" onclick="exportToCSV()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Экспорт CSV
+            </button>
+          </div>
+          <div class="filter-bar glass-card">
+            <div class="search-wrapper">
+              <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" class="search-input" id="mgr-search" placeholder="Поиск по товару, инициатору, магазину..." oninput="filterMgrHistory()" />
+            </div>
+            <div class="filter-chips">
+              <button class="chip active" onclick="setMgrFilter(this, 'all')">Все</button>
+              <button class="chip" onclick="setMgrFilter(this, 'approved')">Одобрено</button>
+              <button class="chip" onclick="setMgrFilter(this, 'rejected')">Отклонено</button>
+              <button class="chip" onclick="setMgrFilter(this, 'no-deduction')">Без удержания</button>
+              <button class="chip" onclick="setMgrFilter(this, 'with-deduction')">С удержанием</button>
+            </div>
+          </div>
+          <div class="requests-list" id="mgr-history-list">
+            <!-- JS filled -->
+          </div>
+        </section>
+
+        <!-- Manager Settings and Profile Section -->
+        <section class="subpage" id="mgr-page-profile">
+          <div class="page-header">
+            <div>
+              <h2 class="page-title">Конфигурация системы</h2>
+              <p class="page-subtitle">Управление интеграционными шлюзами и аккаунтом</p>
+            </div>
+          </div>
+          <div class="profile-grid">
+            <div class="profile-card glass-card">
+              <div class="profile-avatar-large checker-avatar" id="mgr-profile-avatar">НМ</div>
+              <div class="profile-name" id="mgr-profile-name">Новиков Михаил</div>
+              <div class="profile-role-badge checker">Проверяющий</div>
+              <div class="profile-stats">
+                <div class="profile-stat">
+                  <div class="profile-stat-val" id="mgr-profile-reviewed">0</div>
+                  <div class="profile-stat-label">Проверено</div>
+                </div>
+                <div class="profile-stat">
+                  <div class="profile-stat-val" id="mgr-profile-approved-count">0</div>
+                  <div class="profile-stat-label">Одобрено</div>
+                </div>
+                <div class="profile-stat">
+                  <div class="profile-stat-val" id="mgr-profile-rate">0%</div>
+                  <div class="profile-stat-label">Одобрено</div>
+                </div>
+              </div>
+            </div>
+            <div class="profile-info-card glass-card">
+              <h3 class="profile-section-title">Интеграционный шлюз iiko Cloud</h3>
+              <div class="iiko-section" style="margin-top:0; padding-top:0; border:none;">
+                <div class="iiko-status" id="iiko-status">
+                  <div class="status-dot disconnected" id="iiko-status-dot"></div>
+                  <span id="iiko-status-text">Не подключено к iiko API</span>
+                </div>
+                <div class="form-group" style="margin-top:1.25rem;">
+                  <label class="form-label" for="iiko-url">URL-адрес API iiko</label>
+                  <input type="text" id="iiko-url" class="form-input" placeholder="https://api-ru.iiko.services" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="iiko-key">Ключ доступа (apiSecret)</label>
+                  <input type="password" id="iiko-key" class="form-input" placeholder="Введите API ключ" />
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="testIikoConnection()" id="iiko-test-btn">
+                  <span class="btn-text">Протестировать интеграцию</span>
+                  <div class="btn-spinner hidden" id="iiko-spinner"></div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Live activity log inside workspace footer -->
+      <footer class="workspace-footer">
+        <div class="live-activity-feed">
+          <div class="pulse-dot"></div>
+          <span class="feed-label">Live feed:</span>
+          <span class="feed-text" id="live-feed-text-mgr">Система мониторинга списаний активна. Ожидание событий...</span>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ===== PREMIUM RIGHT SLIDING DRAWER (Vercel/Linear Inspector style) ===== -->
+  <div class="drawer-overlay hidden" id="drawer-overlay" onclick="closeDrawer()"></div>
+  <div class="drawer hidden" id="request-drawer">
+    <div class="drawer-header">
+      <div class="drawer-header-left">
+        <h3 class="drawer-title">Карточка списания</h3>
+        <span class="drawer-subtitle" id="drawer-subtitle-id">ID: req-00000</span>
+      </div>
+      <button class="drawer-close-btn" onclick="closeDrawer()" aria-label="Закрыть">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="drawer-content" id="drawer-content">
+      <!-- JS dynamically fills this area -->
+    </div>
+    <div class="drawer-footer" id="drawer-footer">
+      <!-- Buttons/Actions -->
+    </div>
+  </div>
+
+  <!-- ===== REJECT REASON MODAL ===== -->
+  <div class="modal-overlay hidden" id="reject-modal" onclick="closeRejectModal()">
+    <div class="modal glass-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Причина отклонения заявки</h3>
+        <button class="modal-close" onclick="closeRejectModal()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="color:var(--text-secondary); margin-bottom:1rem; font-size:13px;">Пожалуйста, опишите причину отклонения заявки для сотрудника.</p>
+        <div class="form-group">
+          <textarea id="reject-reason" class="form-input form-textarea" placeholder="Например: Фотография смазана, невозможно прочесть наименование." style="min-height:100px"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost btn-sm" onclick="closeRejectModal()">Отмена</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmRejectSubmit()">Отклонить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SUCCESS ANIMATION OVERLAY ===== -->
+  <div class="success-overlay hidden" id="success-overlay">
+    <div class="success-content">
+      <div class="success-circle">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3 class="success-title" id="success-title">Успешно</h3>
+      <p class="success-subtitle" id="success-subtitle">Операция успешно выполнена</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
